@@ -47,21 +47,21 @@ public class StudentService {
 	}
 
 	@Transactional //for update
-	public void updateStudent(Long studentId, String name, String email) {
+	public void updateStudent(Long studentId, Student newStudent) {
 		// TODO Auto-generated method stub
 		Student student = studentRepository.findById(studentId)
 				.orElseThrow(() -> new IllegalStateException("student wit id" + studentId + "not exists"));
 
-		if (name != null && name.length() > 0 && !Objects.equals(student.getName(), name)) {
-			student.setName(name);
+		if (newStudent.getName() != null && newStudent.getName().length() > 0 && !Objects.equals(student.getName(), newStudent.getName())) {
+			student.setName(newStudent.getName());
 		}
 
-		if (email != null && email.length() > 0 && !Objects.equals(student.getEmail(), email)) {
-			Optional<Student> studentOptional = studentRepository.findStudentByEmail(email);
+		if (newStudent.getEmail() != null && newStudent.getEmail().length() > 0 && !Objects.equals(student.getEmail(), newStudent.getEmail())) {
+			Optional<Student> studentOptional = studentRepository.findStudentByEmail(newStudent.getEmail());
 			if (studentOptional.isPresent()) {
 				throw new IllegalStateException("email taken");
 			}
-			student.setEmail(email);
+			student.setEmail(newStudent.getEmail());
 		}
 	}
 }

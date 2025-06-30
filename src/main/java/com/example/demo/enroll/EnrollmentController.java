@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.course.Course;
+import com.example.demo.student.Student;
 
 @RestController
 @RequestMapping(path = "api/v1/enrolls")
@@ -31,6 +32,10 @@ public class EnrollmentController {
 	public List<Enrollment> getEnrollment(){
 		return enrollmentService.getEnrollment();
 		
+	}
+	@GetMapping("/course/{courseId}/students")
+	public List<Student> getStudentByCourse(@PathVariable Long courseId){
+		return enrollmentService.getStudentByCourse(courseId);
 	}
 	
 	@PostMapping

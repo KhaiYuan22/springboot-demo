@@ -36,12 +36,23 @@ public class EnrollmentConfig {
 			Course course2 = courseReporitory.findById(2L)
 					.orElseThrow(() -> new IllegalStateException("Course2 not found"));
 			
-			Enrollment enroll1 = new Enrollment(student1,course1,LocalDateTime.of(2023, 11,23,11,11,20));
-			Enrollment enroll2 = new Enrollment(student1,course2,LocalDateTime.of(2023, 11,23,11,12,39));		
+			List<Enrollment> enrollmentToSave = new java.util.ArrayList<>();
 			
-	enrollmentRepository.saveAll(
-					List.of(enroll1,enroll2));
-		};
-		
+			
+			if(enrollRepository.findByStudentAndCourse(student1, course1).isEmpty()) {
+			Enrollment enroll1 = new Enrollment(student1,course1,LocalDateTime.of(2023, 11,23,11,11,20));
+			enrollmentToSave.add(enroll1);
+			}
+			
+			if(enrollRepository.findByStudentAndCourse(student1, course2).isEmpty()) {
+			Enrollment enroll2 = new Enrollment(student1,course2,LocalDateTime.of(2023, 11,23,11,12,39));		
+			enrollmentToSave.add(enroll2);
+			}
+			
+			if(!enrollmentToSave.isEmpty()) {
+				enrollmentRepository.saveAll(enrollmentToSave);
+			}
+
+	};
 	}
-}
+	}

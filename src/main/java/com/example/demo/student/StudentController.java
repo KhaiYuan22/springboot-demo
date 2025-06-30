@@ -43,10 +43,9 @@ public class StudentController {
 	}
 
 	@PutMapping(path = "/{studentId}")
-	public void putMethodName(@PathVariable("studentId") Long studentId, @RequestParam(required = false) String name,
-			@RequestParam(required = false) String email) {
+	public void putMethodName(@PathVariable("studentId") Long studentId, @RequestBody Student student) {
 		// TODO: process PUT request
-		studentService.updateStudent(studentId, name, email);
+		studentService.updateStudent(studentId, student);
 
 	}
 
