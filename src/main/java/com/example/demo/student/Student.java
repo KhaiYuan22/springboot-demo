@@ -7,13 +7,17 @@ import jakarta.persistence.*;
 
 
 @Entity
-@Table
+@Table(
+	    name = "student",
+	    uniqueConstraints = @UniqueConstraint(columnNames = "email")
+	)
 public class Student {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	
 	private Long id;
 	private String name;
+	@Column(unique = true)
 	private String email;
 	private LocalDate dob;
 	
