@@ -50,8 +50,8 @@ public class EnrollmentController {
 	}
 	
 	@PutMapping(path = "{enrollmentId}")
-	public void changeEnrollment(@PathVariable("enrollmentId") Long enrollmentId, @RequestParam(required = false) Long courseId) {
-		enrollmentService.updateEnrollmentCourse(enrollmentId, courseId);
+	public void changeEnrollment(@PathVariable("enrollmentId") Long enrollmentId, @RequestBody Enrollment enrollment) {
+		enrollmentService.updateEnrollmentCourse(enrollmentId, enrollment);
 	}
 	
 }

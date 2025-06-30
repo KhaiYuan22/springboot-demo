@@ -31,7 +31,7 @@
 		public List<Course> getCourse() {
 			return courseService.getCourse();
 		}
-	
+		
 		@PostMapping
 		public void createNewCourse(@RequestBody Course course) {
 			courseService.addNewCourse(course);
@@ -45,11 +45,9 @@
 		@PutMapping(path = "/{courseId}")
 		public void editCourse(
 				@PathVariable("courseId") Long courseId, 
-				@RequestParam(required = false) String courseName, 
-				@RequestParam(required = false) String description ,
-				@RequestParam(required = false) Integer creditHours) {
+				@RequestBody Course course) {
 			
-		courseService.updateCourse(courseId,courseName, description, creditHours);	
+		courseService.updateCourse(courseId,course);	
 		}
 		
 		

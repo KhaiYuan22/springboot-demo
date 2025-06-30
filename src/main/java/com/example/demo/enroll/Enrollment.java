@@ -2,8 +2,11 @@ package com.example.demo.enroll;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import com.example.demo.course.Course;
 import com.example.demo.student.Student;
+import com.fasterxml.jackson.annotation.JsonCreator;
 
 import jakarta.persistence.*;
 
@@ -24,26 +27,25 @@ public class Enrollment {
 	@ManyToOne
 	@JoinColumn(name = "course_id")
 	private Course course;
-	
+	@CreationTimestamp
+	@Column(nullable = false, updatable = false)
 	private LocalDateTime enrollDateTime;
 	
 	public Enrollment() {
 		super();
 	}
 
-	public Enrollment(Student student, Course course, LocalDateTime enrollDateTime) {
+	public Enrollment(Student student, Course course) {
 		super();
 		this.student = student;
 		this.course = course;
-		this.enrollDateTime = enrollDateTime;
 	}
 
-	public Enrollment(Long id, Student student, Course course, LocalDateTime enrollDateTime) {
+	public Enrollment(Long id, Student student, Course course) {
 		super();
 		this.id = id;
 		this.student = student;
 		this.course = course;
-		this.enrollDateTime = enrollDateTime;
 	}
 
 	public Long getId() {
@@ -74,9 +76,6 @@ public class Enrollment {
 		return enrollDateTime;
 	}
 
-	public void setEnrollDateTime(LocalDateTime enrollDateTime) {
-		this.enrollDateTime = enrollDateTime;
-	}
 
 	@Override
 	public String toString() {

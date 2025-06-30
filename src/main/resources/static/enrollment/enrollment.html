@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Enrollment CRUD</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@3.4.26/dist/vue.global.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<div id="app">
+  <h1>Enrollment</h1>
+
+  <form @submit.prevent="saveEnrollment">
+    <select v-model="form.studentId" required>
+      <option disabled value="">-- Select Student --</option>
+      <option v-for="student in students" :value="student.id">
+        {{ student.name }} ({{ student.email }})
+      </option>
+    </select>
+
+    <select v-model="form.courseId" required>
+      <option disabled value="">-- Select Course --</option>
+      <option v-for="course in courses" :value="course.courseId">
+        {{ course.courseName }}
+      </option>
+    </select>
+
+    <input type="datetime-local" v-model="form.enrollDateTime" disabled>
+
+    <button type="submit">{{ form.id ? 'Update' : 'Add' }}</button>
+  </form>
+
+  <div v-if="errorMessage" style="color: red;">
+    {{ errorMessage }}
+  </div>
+
+  <table border="1">
+    <thead>
+      <tr>
+        <th>ID</th><th>Student</th><th>Course</th><th>Enroll Time</th><th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="enroll in enrollments" :key="enroll.id">
+        <td>{{ enroll.id }}</td>
+        <td>{{ enroll.student.name }}</td>
+        <td>{{ enroll.course.courseName }}</td>
+        <td>{{ enroll.enrollDateTime }}</td>
+        <td>
+          <button @click="editEnrollment(enroll)">Edit</button>
+          <button @click="deleteEnrollment(enroll.id)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+const { createApp, ref, onMounted } = Vue
+
+createApp({
+  setup() {
+    const students = ref([])
+    const courses = ref([])
+    const enrollments = ref([])
+    const errorMessage = ref('')
+    const form = ref({
+      id: null,
+      studentId: '',
+      courseId: '',
+      enrollDateTime: ''
+    })
+
+    const API_ENROLL = 'http://localhost:8080/api/v1/enrolls'
+    const API_STUDENT = 'http://localhost:8080/api/v1/students'
+    const API_COURSE = 'http://localhost:8080/api/v1/courses'
+
+    const fetchStudents = () => {
+      axios.get(API_STUDENT).then(res => {
+        students.value = res.data
+      })
+    }
+
+    const fetchCourses = () => {
+      axios.get(API_COURSE).then(res => {
+        courses.value = res.data
+      })
+    }
+
+    const fetchEnrollments = () => {
+      axios.get(API_ENROLL).then(res => {
+        enrollments.value = res.data
+      })
+    }
+
+    const saveEnrollment = () => {
+      errorMessage.value = ''
+
+      if (!form.value.studentId || !form.value.courseId) {
+        errorMessage.value = 'Please select both student and course.'
+        return
+      }
+
+      const payload = {
+        student: { id: form.value.studentId },
+        course: { courseId: form.value.courseId },
+        enrollDateTime: form.value.enrollDateTime
+      }
+
+      const promise = form.value.id
+        ? axios.put(`${API_ENROLL}/${form.value.id}`, payload)
+        : axios.post(API_ENROLL, payload)
+
+      promise
+        .then(() => {
+          resetForm()
+          fetchEnrollments()
+        })
+        .catch(err => {
+          if (err.response && err.response.data) {
+            errorMessage.value = err.response.data.message || err.response.data
+          } else {
+            errorMessage.value = 'Unknown error occurred'
+          }
+        })
+    }
+
+    const editEnrollment = (enroll) => {
+      form.value.id = enroll.id
+      form.value.studentId = enroll.student.id
+      form.value.courseId = enroll.course.courseId
+      form.value.enrollDateTime = enroll.enrollDateTime
+    }
+
+    const deleteEnrollment = (id) => {
+      axios.delete(`${API_ENROLL}/${id}`)
+        .then(() => {
+          fetchEnrollments()
+        })
+    }
+
+    const resetForm = () => {
+      form.value = {
+        id: null,
+        studentId: '',
+        courseId: '',
+        enrollDateTime: ''
+      }
+    }
+
+    onMounted(() => {
+      fetchStudents()
+      fetchCourses()
+      fetchEnrollments()
+    })
+
+    return {
+      students,
+      courses,
+      enrollments,
+      form,
+      saveEnrollment,
+      editEnrollment,
+      deleteEnrollment,
+      errorMessage
+    }
+  }
+}).mount('#app')
+</script>
+</body>
+</html>

@@ -53,25 +53,27 @@ public class CourseService {
 	}
 
 	@Transactional
-	public void updateCourse(Long courseId, String courseName, String description, Integer creditHours) {
+	public void updateCourse(Long courseId, Course newData) {
 		// TODO Auto-generated method stub
 		Course course = courseRepository.findById(courseId)
 				.orElseThrow(() -> new IllegalStateException("Course " + courseId + " not exists"));
 		
-		if(courseName != null && courseName.length() > 0 && !Objects.equals(course.getCourseName(), courseName)) {
-			Optional<Course> courseOptional = courseRepository.findCourseByCourseName(courseName);
+		if(course.getCourseName() != null && newData.getCourseName().length() > 0 && !Objects.equals(course.getCourseName(), newData.getCourseName())) {
+			Optional<Course> courseOptional = courseRepository.findCourseByCourseName(newData.getCourseName());
 			if(courseOptional.isPresent()) {
 				throw new IllegalStateException("duplicate course name");
 			}
-			course.setCourseName(courseName);		
+			course.setCourseName(newData.getCourseName());		
 			}
-		if(description != null && description.length() > 0 && !Objects.equals(course.getDescription(), description)) {
-			course.setDescription(description);		
+		if(course.getDescription() != null && newData.getDescription().length() > 0 && !Objects.equals(course.getDescription(), newData.getDescription())) {
+			course.setDescription(newData.getDescription());		
 			}
-		if( creditHours != null && creditHours > 0 && !Objects.equals(course.getCreditHours(), creditHours)) {
-			course.setCreditHours(creditHours);		
+		if( course.getCreditHours() != null && newData.getCreditHours() > 0 && !Objects.equals(course.getCreditHours(), newData.getCreditHours())) {
+			course.setCreditHours(newData.getCreditHours());		
 			}
 	}
+
+
 	
 
 }

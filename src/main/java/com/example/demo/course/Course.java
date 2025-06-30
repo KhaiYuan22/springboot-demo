@@ -17,7 +17,7 @@ public class Course {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long courseId;
+	private Long courseId;
 	@Column(unique = true)
 	private String courseName;
 	private String description;
@@ -42,11 +42,11 @@ public class Course {
 		this.creditHours = creditHours;
 	}
 
-	public long getCourseId() {
+	public Long getCourseId() {
 		return courseId;
 	}
 
-	public void setCourseId(long courseId) {
+	public void setCourseId(Long courseId) {
 		this.courseId = courseId;
 	}
 

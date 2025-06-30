@@ -40,12 +40,12 @@ public class EnrollmentConfig {
 			
 			
 			if(enrollRepository.findByStudentAndCourse(student1, course1).isEmpty()) {
-			Enrollment enroll1 = new Enrollment(student1,course1,LocalDateTime.of(2023, 11,23,11,11,20));
+			Enrollment enroll1 = new Enrollment(student1,course1);
 			enrollmentToSave.add(enroll1);
 			}
 			
 			if(enrollRepository.findByStudentAndCourse(student1, course2).isEmpty()) {
-			Enrollment enroll2 = new Enrollment(student1,course2,LocalDateTime.of(2023, 11,23,11,12,39));		
+			Enrollment enroll2 = new Enrollment(student1,course2);		
 			enrollmentToSave.add(enroll2);
 			}
 			

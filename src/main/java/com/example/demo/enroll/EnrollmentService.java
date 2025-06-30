@@ -79,23 +79,32 @@ public class EnrollmentService {
 
 
 
-	public void updateEnrollmentCourse(Long enrollmentId, Long courseId) {
+	public void updateEnrollmentCourse(Long enrollmentId, Enrollment newEnrollment) {
 		// TODO Auto-generated method stub
 
 		
 		Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
 				.orElseThrow(() -> new IllegalStateException("Enrollment Id not found. ID: " + enrollmentId));
 		
-		Course newCourse = courseRepository.findById(courseId)
-				.orElseThrow(()-> new IllegalStateException("Course Id with ID: " + courseId + " not found"));
-		
-		Optional<Enrollment> enrollmentOptional = enrollmentRepository.findByStudentAndCourse(enrollment.getStudent(), newCourse);
-		
-		if(enrollmentOptional.isPresent()) {
-			throw new IllegalStateException("Student already at this course");
+		if(newEnrollment.getStudent() != null && newEnrollment.getStudent().getId() != null) {
+			Student newStudent = studentRepository.findById(newEnrollment.getStudent().getId())
+					.orElseThrow(()-> new IllegalStateException("Student ID: "+ newEnrollment.getStudent().getId()+" Not Found"));
+			enrollment.setStudent(newStudent);
 		}
 		
-		enrollment.setCourse(newCourse);
+		if(newEnrollment.getCourse() != null && newEnrollment.getCourse().getCourseId() != null) {
+			Course newCourse = courseRepository.findById(newEnrollment.getCourse().getCourseId())
+					.orElseThrow(()-> new IllegalStateException("Student ID: "+ newEnrollment.getCourse().getCourseId()+" Not Found"));
+			enrollment.setCourse(newCourse);
+		}
+		Optional<Enrollment> enrollmentOptional = enrollmentRepository.findByStudentAndCourse(enrollment.getStudent(), enrollment.getCourse());
+		
+	    if (enrollmentOptional.isPresent() &&
+	            !enrollmentOptional.get().getId().equals(enrollment.getId())) {
+	        throw new IllegalStateException("Student already enrolled in this course.");
+	    }
+		
+	    
 		enrollmentRepository.save(enrollment);
 	}
 

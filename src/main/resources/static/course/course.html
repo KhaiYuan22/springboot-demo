@@ -1,10 +1,114 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+  <meta charset="UTF-8" />
+  <title>Course CRUD</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@3.4.26/dist/vue.global.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
+<div id="app">
+  <h1>Course</h1>
 
+  <form @submit.prevent="saveCourse">
+    <input v-model="form.courseName" placeholder="Name" required>
+    <input v-model="form.description" placeholder="Desc" required>
+    <input v-model="form.creditHours" placeholder="CreditHours" required>
+    <button type="submit">{{ form.courseId ? 'Update' : 'Add' }}</button>
+  </form>
+
+  <table border="1" cellspacing="0" cellpadding="5">
+    <thead>
+      <tr>
+        <th>ID</th><th>Name</th><th>Description</th><th>Credit Hours</th><th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="course in courses" :key="course.courseId">
+        <td>{{ course.courseId }}</td>
+        <td>{{ course.courseName }}</td>
+        <td>{{ course.description }}</td>
+        <td>{{ course.creditHours }}</td>
+        <td>
+          <button @click="editCourse(course)">Edit</button>
+          <button @click="deleteCourse(course.courseId)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+const { createApp, ref, onMounted } = Vue
+
+createApp({
+  setup() {
+    const courses = ref([])
+    const form = ref({
+      courseId: null,
+      courseName: '',
+      description: '',
+      creditHours: ''
+    })
+
+    const API_BASE = 'http://localhost:8080/api/v1/courses'
+
+    const fetchCourses = () => {
+      axios.get(API_BASE)
+        .then(response => {
+          courses.value = response.data
+        })
+    }
+
+    const saveCourse = () => {
+      if (form.value.courseId) {
+        // Update
+        axios.put(`${API_BASE}/${form.value.courseId}`, form.value)
+          .then(() => {
+            resetForm()
+            fetchCourses()
+          })
+      } else {
+        // Add
+        axios.post(API_BASE, form.value)
+          .then(() => {
+            resetForm()
+            fetchCourses()
+          })
+      }
+    }
+
+    const editCourse = (course) => {
+      form.value = { ...course }
+    }
+
+    const deleteCourse = (courseId) => {
+      axios.delete(`${API_BASE}/${courseId}`)
+        .then(() => {
+          fetchCourses()
+        })
+    }
+
+    const resetForm = () => {
+      form.value = {
+        courseId: null,
+        courseName: '',
+        description: '',
+        creditHours: ''
+      }
+    }
+
+    onMounted(fetchCourses)
+
+    return {
+      courses,
+      form,
+      saveCourse,
+      editCourse,
+      deleteCourse
+    }
+  }
+}).mount('#app')
+</script>
 </body>
 </html>
