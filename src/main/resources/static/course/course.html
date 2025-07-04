@@ -13,7 +13,7 @@
   <form @submit.prevent="saveCourse">
     <input v-model="form.courseName" placeholder="Name" required>
     <input v-model="form.description" placeholder="Desc" required>
-    <input v-model="form.creditHours" placeholder="CreditHours" required>
+    <input v-model="form.creditHours" placeholder="CreditHours" required type="number">
     <button type="submit">{{ form.courseId ? 'Update' : 'Add' }}</button>
   </form>
 
@@ -67,14 +67,23 @@ createApp({
           .then(() => {
             resetForm()
             fetchCourses()
-          })
+          }).catch(err => {
+      	    alert(err.response?.data?.errors?.[0]?.defaultMessage || err.response?.data?.error || "unknown error")
+			})
       } else {
         // Add
         axios.post(API_BASE, form.value)
           .then(() => {
             resetForm()
             fetchCourses()
-          })
+          }).catch(err => {
+        	  const errs = err.response?.data?.errors;
+        	  if (errs && errs.length) {
+        	    alert(errs.map(e => e.defaultMessage).join('\n'));
+        	  } else {
+        	    alert(err.response?.data?.error || "unknown error");
+        	  }
+        	})
       }
     }
 

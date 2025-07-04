@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Enrollment Report</title>
+<script
+	src="https://cdn.jsdelivr.net/npm/vue@3.4.26/dist/vue.global.prod.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+	<div id="app">
+		<h2>Enrollment Report</h2>
+
+		<table border="1" cellpadding="5">
+			<thead>
+				<tr>
+					<th>Course Name</th>
+					<th>Student Name</th>
+				</tr>
+			</thead>
+			<tbody>
+				<template v-for="group in reportData" :key="group.courseName">
+					<tr v-for="(student, i) in group.studentName" :key="student">
+						<td v-if="i === 0" :rowspan="group.studentName.length">{{
+							group.courseName }}</td>
+						<td>{{ student }}</td>
+					</tr>
+				</template>
+			</tbody>
+		</table>
+
+		<table border="1" cellpadding="5">
+			<thead>
+				<tr>
+					<th>Course Name</th>
+					<th>Percentage</th>
+					<th>Student Number</th>
+				</tr>
+			</thead>
+			<tbody>
+				<template v-for="group in reportData" :key="group.courseName">
+					<tr v-for="(student, i) in group.studentName" :key="student">
+						<td v-if="i === 0" :rowspan="group.studentName.length">{{
+							group.courseName }}</td>
+						<td v-if="i === 0" :rowspan="group.studentName.length">{{
+							group.percentage.toFixed(0) }}%</td>
+						<td v-if="i === 0" :rowspan="group.studentName.length">{{
+							group.totalStudents }}</td>
+					</tr>
+				</template>
+				<tr>
+					<td><b>Total Student</b></td>
+					<td></td>
+					<td><b>{{ totalEnrollments() }}</b></td>
+				</tr>
+			</tbody>
+
+		</table>
+		<button @click="fetchReport">Reload</button>
+	</div>
+
+	<script>
+	//import Vue helper
+const { createApp, ref, onMounted } = Vue
+
+// create app from getting API (backend)
+createApp({
+  setup() {
+    const reportData = ref([])
+
+    // match API path(Controller)
+    const API = 'http://localhost:8080/api/v1/enrolls/grouped'
+
+    //get the data from controller
+    const fetchReport = () => {
+      axios.get(API)
+        .then(res => { reportData.value = res.data })
+        .catch(err => alert('Failed to load: ' + err))
+    }
+
+    //count each course student
+    const uniqueStudentCount = () => {
+	//get all student by course
+	const allNames = reportData.value.flatMap(group => group.studentName);
+	const uniqueNames = new Set(allNames);
+	//return the size of course
+	return uniqueNames.size;
+    };
+    
+    //get enrollment total with student and course pair
+    const totalEnrollments = () => {
+        return reportData.value.reduce((sum, group) => sum + group.studentName.length, 0)
+    }
+
+    //load the page
+    onMounted(fetchReport)
+
+    //pass to HTML
+    return { reportData, fetchReport, uniqueStudentCount, totalEnrollments  }
+  }
+}).mount('#app')
+</script>
+</body>
+</html>

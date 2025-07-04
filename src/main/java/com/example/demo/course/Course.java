@@ -7,6 +7,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(
@@ -18,9 +20,15 @@ public class Course {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long courseId;
+	
+	@NotBlank(message = "Name cannot be blank")
 	@Column(unique = true)
 	private String courseName;
+	
+	@NotBlank(message = "Description cannot be blank")
 	private String description;
+	
+	@NotNull(message = "Credit hours cannot be null")
 	private Integer creditHours;
 	
 	public Course() {

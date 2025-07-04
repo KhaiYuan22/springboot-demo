@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.course.Course;
 import com.example.demo.student.Student;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping(path = "api/v1/enrolls")
 public class EnrollmentController {
@@ -31,7 +33,6 @@ public class EnrollmentController {
 	@GetMapping
 	public List<Enrollment> getEnrollment(){
 		return enrollmentService.getEnrollment();
-		
 	}
 	@GetMapping("/course/{courseId}/students")
 	public List<Student> getStudentByCourse(@PathVariable Long courseId){
@@ -39,7 +40,7 @@ public class EnrollmentController {
 	}
 	
 	@PostMapping
-	public void enrollStudent(@RequestBody Enrollment enrollment) {
+	public void enrollStudent(@RequestBody @Valid Enrollment enrollment) {
 		enrollmentService.addEnrollment(enrollment);
 		
 	}
@@ -50,8 +51,18 @@ public class EnrollmentController {
 	}
 	
 	@PutMapping(path = "{enrollmentId}")
-	public void changeEnrollment(@PathVariable("enrollmentId") Long enrollmentId, @RequestBody Enrollment enrollment) {
+	public void changeEnrollment(@PathVariable("enrollmentId") Long enrollmentId, @RequestBody @Valid Enrollment enrollment) {
 		enrollmentService.updateEnrollmentCourse(enrollmentId, enrollment);
 	}
 	
+	@GetMapping("/report")
+	public List<EnrollmentReportDTO> getEnrollmentReport(){
+		return enrollmentService.getEnrollmentReport();
+	}
+	
+	@GetMapping("/grouped")
+	public List<CourseStudentGroupDTO> getGroupedReport() {
+	    return enrollmentService.getCourseStudentGroups();
+	}
+
 }

@@ -30,9 +30,6 @@
     <button type="submit">{{ form.id ? 'Update' : 'Add' }}</button>
   </form>
 
-  <div v-if="errorMessage" style="color: red;">
-    {{ errorMessage }}
-  </div>
 
   <table border="1">
     <thead>
@@ -48,7 +45,7 @@
         <td>{{ enroll.enrollDateTime }}</td>
         <td>
           <button @click="editEnrollment(enroll)">Edit</button>
-          <button @click="deleteEnrollment(enroll.id)">Delete</button>
+          <button @click="deleteEnrollment(enroll.id)">Withdraw</button>
         </td>
       </tr>
     </tbody>
@@ -117,12 +114,13 @@ createApp({
           fetchEnrollments()
         })
         .catch(err => {
-          if (err.response && err.response.data) {
-            errorMessage.value = err.response.data.message || err.response.data
-          } else {
-            errorMessage.value = 'Unknown error occurred'
-          }
-        })
+        	  let msg = "Unknown error"
+        	  if (err.response && err.response.data) {
+        	    msg = err.response.data.message || JSON.stringify(err.response.data)
+        	  }
+        	  alert(msg)
+        	})
+
     }
 
     const editEnrollment = (enroll) => {

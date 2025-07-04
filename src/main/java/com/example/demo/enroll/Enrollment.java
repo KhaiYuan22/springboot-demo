@@ -9,6 +9,7 @@ import com.example.demo.student.Student;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(
@@ -22,11 +23,14 @@ public class Enrollment {
 	
 	@ManyToOne
 	@JoinColumn(name = "student_id")
+	@NotNull(message = "Student cannot be null")
 	private Student student;
 	
 	@ManyToOne
 	@JoinColumn(name = "course_id")
+	@NotNull(message = "Course cannot be null")
 	private Course course;
+	
 	@CreationTimestamp
 	@Column(nullable = false, updatable = false)
 	private LocalDateTime enrollDateTime;

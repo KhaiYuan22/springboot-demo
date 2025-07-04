@@ -43,7 +43,14 @@ public class StudentService {
 		if (!exists) {
 			throw new IllegalStateException("Student not exists - ID:" + studentId);
 		}
+		try {
 		studentRepository.deleteById(studentId);
+		} catch (Exception e) {
+			if (e.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
+				throw new IllegalStateException("The student had enroll courses, cannot remove this student!!");
+			}
+			throw e;
+		}
 	}
 
 	@Transactional //for update

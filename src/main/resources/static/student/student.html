@@ -1,44 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Student CRUD</title>
-  <script src="https://cdn.jsdelivr.net/npm/vue@3.4.26/dist/vue.global.prod.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<meta charset="UTF-8" />
+<title>Student CRUD</title>
+<script
+	src="https://cdn.jsdelivr.net/npm/vue@3.4.26/dist/vue.global.prod.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
-<div id="app">
-  <h1>Students</h1>
+	<div id="app">
+		<h1>Students</h1>
 
-  <form @submit.prevent="saveStudent">
-    <input v-model="form.name" placeholder="Name" required>
-    <input v-model="form.email" placeholder="Email" required>
-    <input v-model="form.dob" type="date" required>
-    <button type="submit">{{ form.id ? 'Update' : 'Add' }}</button>
-  </form>
+		<form @submit.prevent="saveStudent">
+			<input v-model="form.name" placeholder="Name" required> <input
+				v-model="form.email" placeholder="Email" required> <input
+				v-model="form.dob" type="date" :required="!form.id"
+				:disabled="!!form.id">
 
-  <table border="1" cellspacing="0" cellpadding="5">
-    <thead>
-      <tr>
-        <th>ID</th><th>Name</th><th>Email</th><th>DOB</th><th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="student in students" :key="student.id">
-        <td>{{ student.id }}</td>
-        <td>{{ student.name }}</td>
-        <td>{{ student.email }}</td>
-        <td>{{ student.dob }}</td>
-        <td>
-          <button @click="editStudent(student)">Edit</button>
-          <button @click="deleteStudent(student.id)">Delete</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+			<button type="submit">{{ form.id ? 'Update' : 'Add' }}</button>
+		</form>
 
-<script>
+		<table border="1" cellspacing="0" cellpadding="5">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Name</th>
+					<th>Email</th>
+					<th>DOB</th>
+					<th>Age</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr v-for="student in students" :key="student.id">
+					<td>{{ student.id }}</td>
+					<td>{{ student.name }}</td>
+					<td>{{ student.email }}</td>
+					<td>{{ student.dob }}</td>
+					<td>{{ student.age }}</td>
+					<td>
+						<button @click="editStudent(student)">Edit</button>
+						<button @click="deleteStudent(student.id)">Delete</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<script>
 const { createApp, ref, onMounted } = Vue
 
 createApp({
@@ -67,14 +76,18 @@ createApp({
           .then(() => {
             resetForm()
             fetchStudents()
-          })
+          }).catch(err => {
+        	    alert(err.response?.data?.errors?.[0]?.defaultMessage || err.response?.data?.error || "unknown error")
+				})
       } else {
         // Add
         axios.post(API_BASE, form.value)
           .then(() => {
             resetForm()
             fetchStudents()
-          })
+          }).catch(err => {
+      	    alert(err.response?.data?.errors?.[0]?.defaultMessage || err.response?.data?.error || "unknown error")
+			})
       }
     }
 
@@ -86,6 +99,14 @@ createApp({
       axios.delete(`${API_BASE}/${id}`)
         .then(() => {
           fetchStudents()
+        }).catch(err => {
+			alert(
+			
+			err.response?.data?.message||
+			err.response?.data?.errors?.[0]?.defaultMessage||
+			err.response?.data?.error ||
+			"Unknown error"
+			)
         })
     }
 

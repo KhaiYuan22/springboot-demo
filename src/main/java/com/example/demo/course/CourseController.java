@@ -14,6 +14,8 @@
 	import org.springframework.web.bind.annotation.RestController;
 	
 	import com.example.demo.student.StudentService;
+
+import jakarta.validation.Valid;
 	
 	@RestController
 	@RequestMapping(path = "api/v1/courses")
@@ -33,7 +35,7 @@
 		}
 		
 		@PostMapping
-		public void createNewCourse(@RequestBody Course course) {
+		public void createNewCourse(@RequestBody @Valid Course course) {
 			courseService.addNewCourse(course);
 		}
 	
@@ -45,7 +47,7 @@
 		@PutMapping(path = "/{courseId}")
 		public void editCourse(
 				@PathVariable("courseId") Long courseId, 
-				@RequestBody Course course) {
+				@RequestBody @Valid Course course) {
 			
 		courseService.updateCourse(courseId,course);	
 		}

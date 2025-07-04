@@ -52,6 +52,7 @@ public class EnrollmentConfig {
 			if(!enrollmentToSave.isEmpty()) {
 				enrollmentRepository.saveAll(enrollmentToSave);
 			}
+			
 
 	};
 	}

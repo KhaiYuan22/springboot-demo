@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.example.demo.course.Course;
@@ -18,4 +19,6 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
 	List<Enrollment> findByCourse(Course course);
 
 	List<Enrollment> findByStudent(Student student);
+	
+
 }

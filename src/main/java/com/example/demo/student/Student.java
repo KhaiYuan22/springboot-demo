@@ -4,6 +4,9 @@ import java.time.LocalDate;
 import java.time.Period;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 
 @Entity
@@ -14,11 +17,16 @@ import jakarta.persistence.*;
 public class Student {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	
 	private Long id;
+	
+	@NotBlank(message = "Name cannot be blank")
 	private String name;
+	
 	@Column(unique = true)
+	@Email(message = "Invalid email")
 	private String email;
+	
+	@NotNull(message = "Date of Birth cannot be null")
 	private LocalDate dob;
 	
 	@Transient
