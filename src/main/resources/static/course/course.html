@@ -68,8 +68,15 @@ createApp({
             resetForm()
             fetchCourses()
           }).catch(err => {
-      	    alert(err.response?.data?.errors?.[0]?.defaultMessage || err.response?.data?.error || "unknown error")
-			})
+    let data = err.response?.data;
+    let msg = data?.message ||
+              data?.errors?.[0]?.defaultMessage ||
+              data?.error ||
+              (typeof data === 'string' ? data : null) ||
+              "Unknown error";
+    alert(msg);
+})
+
       } else {
         // Add
         axios.post(API_BASE, form.value)
@@ -77,13 +84,15 @@ createApp({
             resetForm()
             fetchCourses()
           }).catch(err => {
-        	  const errs = err.response?.data?.errors;
-        	  if (errs && errs.length) {
-        	    alert(errs.map(e => e.defaultMessage).join('\n'));
-        	  } else {
-        	    alert(err.response?.data?.error || "unknown error");
-        	  }
-        	})
+    let data = err.response?.data;
+    let msg = data?.message ||
+              data?.errors?.[0]?.defaultMessage ||
+              data?.error ||
+              (typeof data === 'string' ? data : null) ||
+              "Unknown error";
+    alert(msg);
+})
+
       }
     }
 

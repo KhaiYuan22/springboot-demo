@@ -29,6 +29,7 @@ public class StudentController {
 
 	@Autowired
 	public StudentController(StudentService studentService) {
+
 		this.studentService = studentService;
 	}
 
