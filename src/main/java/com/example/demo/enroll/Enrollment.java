@@ -16,7 +16,7 @@ import jakarta.validation.constraints.NotNull;
 		  uniqueConstraints = @UniqueConstraint(columnNames = {"student_id", "course_id"})
 		)
 public class Enrollment {
-
+//Declaration and validation from database(check null)
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -34,7 +34,8 @@ public class Enrollment {
 	@CreationTimestamp
 	@Column(nullable = false, updatable = false)
 	private LocalDateTime enrollDateTime;
-	
+
+	//Constructor
 	public Enrollment() {
 		super();
 	}
@@ -52,6 +53,7 @@ public class Enrollment {
 		this.course = course;
 	}
 
+	//Getter and Setter
 	public Long getId() {
 		return id;
 	}
@@ -81,6 +83,7 @@ public class Enrollment {
 	}
 
 
+	//To String
 	@Override
 	public String toString() {
 		return "Enrollment [id=" + id + ", student=" + student + ", course=" + course + ", enrollDateTime="
