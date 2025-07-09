@@ -67,8 +67,18 @@
     </style>
 </head>
 <body>
+<div id="tokenInputBox">
+    <b>JWT Token:</b>
+    <input type="text" id="tokenInput" style="width:65%;" placeholder="Paste your token here"/>
+    <button onclick="clearToken()" style="margin-left:8px;">Clear Token</button>
+    <button onclick="window.location.href='enrollment.html'" style="margin-left:8px;">Back to Enrollment</button>
+    <span style="color:green" id="tokenStatus"></span>
+</div>
+
 <div id="app">
     <h2>Enrollment Report</h2>
+
+    <div v-if="errorMsg" style="color:red;margin-bottom:14px;">{{ errorMsg }}</div>
 
     <table>
         <thead>
@@ -88,7 +98,7 @@
         </tbody>
     </table>
 
-    <table>
+    <table v-if="reportData.length">
         <thead>
         <tr>
             <th>Course Name</th>
@@ -122,89 +132,134 @@
 </div>
 
 <script>
-	//import Vue helper
-    const { createApp, ref, onMounted, nextTick } = Vue
+    function clearToken() {
+    localStorage.removeItem('jwtToken');
+    document.getElementById('tokenInput').value = '';
+    document.getElementById('tokenStatus').innerText = 'Token cleared.';
+}
+    let chart = null
+
+//import Vue helper
+const { createApp, ref, onMounted, nextTick } = Vue
 // create app from getting API (backend)
-    createApp({
-      setup() {
-        const reportData = ref([])
-        let chart = null
+createApp({
+  setup() {
+    const reportData = ref([])
+    const errorMsg = ref('')
 
-            // match API path(Controller)
-        const API = 'http://localhost:8080/api/v1/enrolls/grouped'
 
-            //get the data from controller
+        // match API path(Controller)
+    const API = 'http://localhost:8080/api/v1/enrolls/grouped'
+
+
+        // Try auto fill token input
+        onMounted(() => {
+            let token = localStorage.getItem('jwtToken') || '';
+            if(token) {
+                document.getElementById('tokenInput').value = token;
+                document.getElementById('tokenStatus').innerText = 'Token loaded from localStorage!';
+            } else {
+                document.getElementById('tokenStatus').innerText = 'No token found.';
+            }
+            fetchReport()
+        })
+
+        //get the data from controller
+<!--        const fetchReport = () => {-->
+<!--          axios.get(API)-->
+<!--            .then(res => {-->
+<!--              reportData.value = res.data-->
+<!--            })-->
+<!--            .then(() => nextTick(renderBarChart))-->
+<!--            .catch(err => alert('Failed to load: ' + err))-->
+<!--        }-->
+
         const fetchReport = () => {
-          axios.get(API)
+        errorMsg.value = ''
+          const token = document.getElementById("tokenInput").value.trim()
+                      if (!token) {
+                errorMsg.value = "Please paste or get your token first!"
+                reportData.value = []
+                return
+            }
+          axios.get(API, {
+              headers: { Authorization: "Bearer " + token }
+            })
             .then(res => {
-              reportData.value = res.data
+              reportData.value = res.data;
             })
             .then(() => nextTick(renderBarChart))
-            .catch(err => alert('Failed to load: ' + err))
+            .catch(err => {
+              // Session expired or unauthorized
+              alert('Session expired or unauthorized. Please get a new token or check your token.');
+              // Optionally: clear data
+              reportData.value = [];
+            });
         }
 
-        // Count students from all courses
-        const totalUniqueStudents = () => {
-          const allNames = reportData.value.flatMap(group => group.studentName)
-          return new Set(allNames).size
-        }
+    // Count students from all courses
+    const totalUniqueStudents = () => {
+      const allNames = reportData.value.flatMap(group => group.studentName)
+      return new Set(allNames).size
+    }
 
-        // --- Bar Chart Rendering ---
-        const renderBarChart = () => {
-        //get all student by course
-          const ctx = document.getElementById('barChart').getContext('2d')
-          //if don't have chart
-          if (chart) chart.destroy()
-          //create chart  from chart.js
-          chart = new Chart(ctx, {
-            type: 'bar',
-            //get data
-            data: {
-            //put the label of the chart
-              labels: reportData.value.map(g => g.courseName),
-              //put the data label
-              datasets: [{
-                label: '% of Students',
-                data: reportData.value.map(g => g.percentage),
-                backgroundColor: [
-                  'rgba(75, 192, 192, 0.80)',
-                  'rgba(255, 159, 64, 0.80)',
-                  'rgba(153, 102, 255, 0.80)',
-                  'rgba(255, 205, 86, 0.80)',
-                  'rgba(255, 99, 132, 0.80)'
-                ]
-              }]
+    // --- Bar Chart Rendering ---
+    const renderBarChart = () => {
+    //get all student by course
+      const ctx = document.getElementById('barChart').getContext('2d')
+      //if don't have chart
+      if (chart) chart.destroy()
+      //create chart  from chart.js
+      chart = new Chart(ctx, {
+        type: 'bar',
+        //get data
+        data: {
+        //put the label of the chart
+          labels: reportData.value.map(g => g.courseName),
+          //put the data label
+          datasets: [{
+            label: '% of Students',
+            data: reportData.value.map(g => g.percentage),
+            backgroundColor: [
+              'rgba(75, 192, 192, 0.80)',
+              'rgba(255, 159, 64, 0.80)',
+              'rgba(153, 102, 255, 0.80)',
+              'rgba(255, 205, 86, 0.80)',
+              'rgba(255, 99, 132, 0.80)'
+            ]
+          }]
+        },
+        options: {
+        //make it auto view for phone or laptop
+          responsive: true,
+          //call the plugin
+          plugins: {
+          //already have legend (label) so set it false
+            legend: {
+            display: false
             },
-            options: {
-            //make it auto view for phone or laptop
-              responsive: true,
-              //call the plugin
-              plugins: {
-              //already have legend (label) so set it false
-                legend: {
-                display: false
-                },
-                //if hover, then display the percentage
-                tooltip: {
-                callbacks: {
-                  label: ctx => ` ${ctx.parsed.y.toFixed(2)}%`
-                } }
-              },
-              //always start from 0 - 100 in percentage
-              scales: {
-                y: { beginAtZero: true,
-                max: 100,
-                ticks: { callback: v => v + "%" } }
-              }
-            }
-          })
+            //if hover, then display the percentage
+            tooltip: {
+            callbacks: {
+              label: ctx => ` ${ctx.parsed.y.toFixed(2)}%`
+            } }
+          },
+          //always start from 0 - 100 in percentage
+          scales: {
+            y: { beginAtZero: true,
+            max: 100,
+            ticks: { callback: v => v + "%" } }
+          }
         }
-		//load the page
-        onMounted(fetchReport)
-		//pass to html
-        return { reportData, fetchReport, totalUniqueStudents }
-      }
-    }).mount('#app')
+      })
+    }
+    //load the page
+    onMounted(fetchReport)
+    //pass to html
+
+        return { reportData, fetchReport, totalUniqueStudents, errorMsg }
+  }
+}).mount('#app')
 </script>
 </body>
 </html>
