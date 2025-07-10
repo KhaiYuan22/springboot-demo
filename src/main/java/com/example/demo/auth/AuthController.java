@@ -13,7 +13,7 @@ import java.util.Date;
 @RequestMapping("/auth")// All routes in this controller start with /auth
 public class AuthController {
 
-    // Use a secure key in production!
+    // Use a secure key in production!(No Use)
     private static final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);//Get the key by auto generated SHA256(Way to generate) everytime start Currently no use
 
     @PostMapping("/token")//set a mapping to allow access /auth/token

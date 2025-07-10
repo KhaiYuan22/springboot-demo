@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Error Occurred!</title>
+  <style>
+    body { font-family: Arial; background: #f3f3f3; text-align: center; }
+    .err { margin: 50px auto; padding: 50px; background: #fff; border-radius: 16px; box-shadow: 0 4px 18px #0001; max-width: 500px; }
+    h1 { color: #c33; }
+    p { color: #333; }
+  </style>
+</head>
+<body>
+<div class="err">
+  <h1>Oops! Something went wrong.</h1>
+  <p>
+    The page you requested is forbidden or missing.<br>
+    <b>Status:</b> <span id="err-status">Unknown</span>
+  </p>
+  <a href="/" style="color:#338;">Return to Home</a>
+</div>
+<script>
+  // (Optional) Show status code if you have it
+  fetch('/error', { method: 'GET' })
+    .then(() => { document.getElementById('err-status').textContent = "403 / 404"; })
+    .catch(() => {});
+</script>
+</body>
+</html>
