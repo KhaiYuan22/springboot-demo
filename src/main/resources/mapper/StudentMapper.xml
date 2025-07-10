@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.student.StudentMapper"><!--It is getting from mapper-->
+<!--parameterType - the mapper to xml data type (input)
+    resultType - the xml return to mapper data type (output)-->
+    <select id="selectStudentById" resultType="com.example.demo.student.Student">
+        SELECT * FROM student WHERE id = #{id}
+    </select>
+    <select id="selectAllStudent" resultType="com.example.demo.student.Student">
+        SELECT * FROM student
+    </select>
+    <select id="selectStudentByEmail" parameterType="string" resultType="com.example.demo.student.Student">
+        SELECT * FROM student WHERE email = #{email}
+    </select>
+
+    <insert id="saveStudent" parameterType="com.example.demo.student.Student">
+        INSERT INTO student (name, email, dob)
+        VALUES (#{name}, #{email}, #{dob})
+    </insert>
+    <select id="existsById" parameterType="long" resultType="boolean">
+        SELECT COUNT(*) > 0 FROM student WHERE id = #{id}
+    </select>
+    <delete id="deleteStudentById" parameterType="long">
+        DELETE FROM student WHERE id = #{id}
+    </delete>
+    <update id="updateStudentById" parameterType="com.example.demo.student.Student">
+        UPDATE student
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="dob != null">dob = #{dob},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+
+</mapper>
+
